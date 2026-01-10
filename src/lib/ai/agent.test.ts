@@ -21,19 +21,22 @@ vi.mock('ai', async () => {
 import { runAgent } from './agent';
 
 describe('Agent Logic', () => {
-  it('should call streamText with correct parameters', async () => {
+  it('should call getModel and streamText with correct parameters', async () => {
     const { streamText } = await import('ai');
+    const { getModel } = await import('./registry');
     
+    const selection = { provider: 'google', modelId: 'gemini-1.5-flash' } as const;
     await runAgent({
       messages: [{ role: 'user', content: 'hello' }],
-      selection: { provider: 'google', modelId: 'gemini-1.5-flash' }
+      selection
     });
 
+    expect(getModel).toHaveBeenCalledWith(selection);
     expect(streamText).toHaveBeenCalledWith(expect.objectContaining({
       model: expect.anything(),
       messages: expect.any(Array),
       tools: expect.anything(),
-      maxSteps: expect.any(Number),
+      maxSteps: 5,
     }));
   });
 });
