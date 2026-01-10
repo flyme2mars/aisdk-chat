@@ -15,7 +15,7 @@ import { type ModelSelection } from '@/lib/ai/registry';
 export default function Chat() {
   const [selection, setSelection] = useState<ModelSelection>({
     provider: 'google',
-    modelId: 'gemini-1.5-flash',
+    modelId: 'gemini-2.5-flash-lite',
   });
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({

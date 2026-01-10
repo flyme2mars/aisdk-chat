@@ -24,12 +24,14 @@ export function getModel(selection: ModelSelection): LanguageModelV1 {
 
 export const AVAILABLE_MODELS: Record<AIProvider, { id: string; label: string }[]> = {
   google: [
-    { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
-    { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+    { id: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' },
+    { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+    { id: 'gemini-2.0-pro-exp', label: 'Gemini 2.0 Pro Exp' },
   ],
   openrouter: [
-    { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini' },
+    { id: 'openai/gpt-4o', label: 'GPT-4o' },
     { id: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
-    { id: 'google/gemini-flash-1.5', label: 'Gemini Flash 1.5 (OpenRouter)' },
+    { id: 'google/gemini-2.0-flash-lite:free', label: 'Gemini 2.0 Flash Lite (Free)' },
+    { id: 'deepseek/deepseek-chat', label: 'DeepSeek V3' },
   ],
 };
