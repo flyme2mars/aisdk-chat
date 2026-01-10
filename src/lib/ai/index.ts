@@ -1,6 +1,7 @@
 export * from './providers';
 export * from './tavily';
 export * from './registry';
+export * from './agent';
 
 export function validateEnv() {
   const required = [
