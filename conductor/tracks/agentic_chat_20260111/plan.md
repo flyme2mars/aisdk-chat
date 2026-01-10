@@ -9,9 +9,9 @@ This plan follows a TDD-centric approach to reimplement the chat application as 
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md) 63073e3
 
 ## Phase 2: Tool Integration & Agent Logic
-- [~] Task: Implement the Tavily Search tool using Vercel AI SDK `tool()` definition.
-- [ ] Task: Create the core agent logic using `streamText` with support for recursive tool calling.
-- [ ] Task: Write tests for tool execution (mocking Tavily API) and agent response structure.
+- [x] Task: Implement the Tavily Search tool using Vercel AI SDK `tool()` definition. 30eb645
+- [x] Task: Create the core agent logic using `streamText` with support for recursive tool calling. ebfb5a8
+- [x] Task: Write tests for tool execution (mocking Tavily API) and agent response structure. 01332b8
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Agent Logic' (Protocol in workflow.md)
 
 ## Phase 3: UI/UX Reimplementation (Clean Slate)
