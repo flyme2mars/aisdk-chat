@@ -15,10 +15,10 @@ This plan follows a TDD-centric approach to reimplement the chat application as 
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Agent Logic' (Protocol in workflow.md) f330c2e
 
 ## Phase 3: UI/UX Reimplementation (Clean Slate)
-- [~] Task: Scaffold the new chat layout, bypassing the current implementation.
-- [ ] Task: Build the `ProviderSelector` component for real-time model switching.
-- [ ] Task: Implement the `MessageContent` component to handle streaming text and "Reasoning Trace" (tool-call status).
-- [ ] Task: Write integration tests for the chat flow, ensuring messages are appended and streamed correctly.
+- [x] Task: Scaffold the new chat layout, bypassing the current implementation. 13a1623
+- [x] Task: Build the `ProviderSelector` component for real-time model switching. 13a1623
+- [x] Task: Implement the `MessageContent` component to handle streaming text and "Reasoning Trace" (tool-call status). 13a1623
+- [x] Task: Write integration tests for the chat flow, ensuring messages are appended and streamed correctly. 13a1623
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI/UX' (Protocol in workflow.md)
 
 ## Phase 4: Robustness & Error Handling
