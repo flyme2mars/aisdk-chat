@@ -1,0 +1,8 @@
+{
+  "track_id": "agentic_chat_20260111",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-11T12:00:00Z",
+  "updated_at": "2026-01-11T12:00:00Z",
+  "description": "Reimplement the chat as a robust agentic interface with browser search (Tavily) and dynamic provider switching using Vercel AI SDK."
+}

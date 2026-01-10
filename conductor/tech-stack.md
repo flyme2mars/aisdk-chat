@@ -14,3 +14,6 @@
 - **Framework:** Vercel AI SDK v6
 - **Provider:** OpenAI Provider (configured for OpenRouter)
 - **Streaming:** Real-time text streaming protocol
+
+## Testing
+- **Framework:** Vitest

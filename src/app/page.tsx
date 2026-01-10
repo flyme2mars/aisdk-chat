@@ -10,9 +10,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Chat() {
-  const { messages, status, sendMessage } = useChat({
-    maxSteps: 5,
-  } as any) as any;
+  const { messages, status, sendMessage } = useChat() as any;
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
