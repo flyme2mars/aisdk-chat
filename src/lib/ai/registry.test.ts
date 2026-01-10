@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock the providers and tavily before importing registry
 vi.mock('./providers', () => ({
-  google: vi.fn((id: string) => ({ modelId: id, provider: 'google' })),
-  openrouter: vi.fn((id: string) => ({ modelId: id, provider: 'openrouter' })),
+  getGoogle: vi.fn(() => vi.fn((id: string) => ({ modelId: id, provider: 'google' }))),
+  getOpenRouter: vi.fn(() => vi.fn((id: string) => ({ modelId: id, provider: 'openrouter' }))),
   DEFAULT_MODELS: {
     openrouter: 'openai/gpt-4o-mini',
     google: 'gemini-1.5-flash',
@@ -11,9 +11,9 @@ vi.mock('./providers', () => ({
 }));
 
 vi.mock('./tavily', () => ({
-  tavilyClient: {
+  getTavilyClient: vi.fn(() => ({
     search: vi.fn(),
-  },
+  })),
 }));
 
 import { validateEnv, getModel, AVAILABLE_MODELS } from './index';
@@ -49,7 +49,6 @@ describe('ProviderRegistry', () => {
   it('should return an openrouter model for openrouter provider', () => {
     const model = getModel({ provider: 'openrouter', modelId: 'openai/gpt-4o-mini' });
     expect(model).toBeDefined();
-    // For OpenAI compatible providers, modelId might be different internally depending on how createOpenAI is used
     expect(model.modelId).toBe('openai/gpt-4o-mini');
   });
 

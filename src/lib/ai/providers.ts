@@ -1,16 +1,29 @@
-import { createOpenAI } from '@ai-sdk/openai';
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createOpenAI, type OpenAIProvider } from '@ai-sdk/openai';
+import { createGoogleGenerativeAI, type GoogleGenerativeAIProvider } from '@ai-sdk/google';
+
+let openrouterInstance: OpenAIProvider | null = null;
+let googleInstance: GoogleGenerativeAIProvider | null = null;
 
 // OpenRouter Provider (OpenAI Compatible)
-export const openrouter = createOpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+export function getOpenRouter() {
+  if (!openrouterInstance) {
+    openrouterInstance = createOpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
+  }
+  return openrouterInstance;
+}
 
 // Google Gemini Provider
-export const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-});
+export function getGoogle() {
+  if (!googleInstance) {
+    googleInstance = createGoogleGenerativeAI({
+      apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+  }
+  return googleInstance;
+}
 
 // Default models
 export const DEFAULT_MODELS = {

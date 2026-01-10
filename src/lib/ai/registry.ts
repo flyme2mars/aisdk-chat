@@ -1,4 +1,4 @@
-import { google, openrouter } from './providers';
+import { getGoogle, getOpenRouter } from './providers';
 import { LanguageModelV1 } from 'ai';
 
 export type AIProvider = 'google' | 'openrouter';
@@ -13,9 +13,9 @@ export const PROVIDERS: AIProvider[] = ['google', 'openrouter'];
 export function getModel(selection: ModelSelection): LanguageModelV1 {
   switch (selection.provider) {
     case 'google':
-      return google(selection.modelId);
+      return getGoogle()(selection.modelId);
     case 'openrouter':
-      return openrouter(selection.modelId);
+      return getOpenRouter()(selection.modelId);
     default:
       const _exhaustiveCheck: never = selection.provider;
       throw new Error(`Unsupported provider: ${selection.provider}`);
