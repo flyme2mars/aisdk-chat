@@ -3,9 +3,9 @@
 This plan follows a TDD-centric approach to reimplement the chat application as a robust agentic interface.
 
 ## Phase 1: Foundation & Provider Configuration
-- [x] Task: Set up environment variables and API clients for Tavily, OpenRouter, and Gemini.
-- [x] Task: Implement a unified `ProviderRegistry` to manage dynamic switching between AI models.
-- [x] Task: Write unit tests for provider initialization and configuration validation.
+- [x] Task: Set up environment variables and API clients for Tavily, OpenRouter, and Gemini. 861d311
+- [x] Task: Implement a unified `ProviderRegistry` to manage dynamic switching between AI models. 861d311
+- [x] Task: Write unit tests for provider initialization and configuration validation. 861d311
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Tool Integration & Agent Logic
