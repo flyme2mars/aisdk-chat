@@ -1,39 +1,48 @@
 import { runAgent, validateEnv } from '@/lib/ai';
+import { generateText } from 'ai';
+import { getModel } from '@/lib/ai/registry';
+import { webSearchTool } from '@/lib/ai/tools/search';
 
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    // 1. Validate environment variables
     validateEnv();
+    const body = await req.json();
+    const selection = body.selection || { provider: 'google', modelId: 'gemini-2.5-flash-lite' };
+    const { messages } = body;
 
-    // 2. Parse request
-    const { messages, selection } = await req.json();
+    if (!messages) return new Response('Missing messages', { status: 400 });
 
-    if (!messages || !selection) {
-      return new Response('Missing messages or selection', { status: 400 });
-    }
+    console.log(`[API] Agent Manual Multi-Step for: ${selection.modelId}`);
 
-    console.log(`[API] Agent request for provider: ${selection.provider}, model: ${selection.modelId}`);
+    const model = getModel(selection);
 
-    // 3. Run the agent
-    const result = runAgent({
+    // Step 1: Generate response with tool calling (Non-streaming for the "thinking" part)
+    const firstStep = await generateText({
+      model,
       messages,
+      tools: { webSearch: webSearchTool },
+      maxSteps: 5, // Handles the recursive search internally
+      system: `You are a helpful AI assistant with web search capabilities.
+      If you use a tool, use the information gathered to provide a final answer.`,
+    });
+
+    console.log(`[API] Agent finished thinking. Steps taken: ${firstStep.steps.length}`);
+
+    // Step 2: Stream the final result to the UI
+    // We provide the full history including the tool calls and results from the firstStep
+    const result = runAgent({
+      messages: [...messages, ...firstStep.response.messages],
       selection,
     });
 
-    // 4. Return the stream response
-    return result.toDataStreamResponse();
+    return (result as any).toTextStreamResponse();
   } catch (error: any) {
     console.error('[API Error]:', error);
-    return new Response(
-      JSON.stringify({ 
-        error: error.message || 'An internal error occurred' 
-      }), 
-      { 
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), { 
+      status: 500, 
+      headers: { 'Content-Type': 'application/json' } 
+    });
   }
 }

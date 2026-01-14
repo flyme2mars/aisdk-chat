@@ -3,11 +3,21 @@ import { z } from 'zod';
 import { getTavilyClient } from '../tavily';
 
 export const webSearchTool = tool({
-  description: 'Search the web for information using Tavily API. Use this for real-time information or when your knowledge base is insufficient.',
+  description: 'Search the web for information using Tavily API. ALWAYS provide a "query" string parameter. Use this for real-time information or when your knowledge base is insufficient.',
   parameters: z.object({
-    query: z.string().describe('The search query to execute'),
+    query: z.string().describe('The search query to execute. This is REQUIRED.'),
   }),
-  execute: async ({ query }) => {
+  execute: async (args) => {
+    // Robust argument extraction
+    const query = args.query;
+    
+    if (!query) {
+      console.error('[Tool: WebSearch] No query provided in args:', args);
+      return JSON.stringify({ error: 'No query provided. Please provide a search query.' });
+    }
+
+    console.log(`[Tool: WebSearch] Executing search for: "${query}"`);
+
     try {
       const client = getTavilyClient();
       const response = await client.search(query, {

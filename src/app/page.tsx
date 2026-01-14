@@ -1,6 +1,5 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
 import { Send, Bot, Sparkles, Loader2 } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,19 +10,18 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ProviderSelector } from '@/components/ProviderSelector';
 import { MessageContent } from '@/components/MessageContent';
 import { type ModelSelection } from '@/lib/ai/registry';
+import { type Message } from 'ai';
 
 export default function Chat() {
   const [selection, setSelection] = useState<ModelSelection>({
     provider: 'google',
-    modelId: 'gemini-2.5-flash-lite',
+    modelId: 'gemini-flash-lite-latest',
   });
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
-    api: '/api/chat',
-    body: {
-      selection,
-    },
-  });
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +32,76 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: input,
+    };
+
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput('');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          selection,
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to fetch response');
+      }
+
+      if (!response.body) throw new Error('No response body');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '',
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Update the last message content
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last && last.role === 'assistant') {
+            return [
+              ...prev.slice(0, -1),
+              { ...last, content: last.content + chunk }
+            ];
+          }
+          return prev;
+        });
+      }
+    } catch (err: any) {
+      console.error('Chat error:', err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4 md:p-10">
@@ -77,10 +145,8 @@ export default function Chat() {
                   {['What is the price of Bitcoin today?', 'Latest news on AI agents', 'How to use Vercel AI SDK', 'Weather in Tokyo'].map((hint) => (
                     <button 
                       key={hint}
-                      onClick={() => {
-                        const event = { target: { value: hint } } as any;
-                        handleInputChange(event);
-                      }}
+                      type="button"
+                      onClick={() => setInput(hint)}
                       className="text-xs text-left p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                     >
                       "{hint}"
@@ -101,7 +167,6 @@ export default function Chat() {
                   {m.role !== 'user' && (
                     <Avatar className="h-10 w-10 border shadow-sm shrink-0">
                       <AvatarFallback className="bg-primary/10 text-primary">AI</AvatarFallback>
-                      <AvatarImage src="/bot-avatar.png" />
                     </Avatar>
                   )}
                   
@@ -144,7 +209,7 @@ export default function Chat() {
               {error && (
                 <div className="flex justify-center w-full p-4">
                   <div className="bg-destructive/10 text-destructive text-xs px-4 py-2 rounded-full border border-destructive/20 flex items-center gap-2">
-                    <span className="font-bold">Error:</span> {error.message || 'Failed to fetch response'}
+                    <span className="font-bold">Error:</span> {error}
                   </div>
                 </div>
               )}
@@ -158,7 +223,13 @@ export default function Chat() {
             <div className="relative flex-1 group">
               <Input
                 value={input}
-                onChange={handleInputChange}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    e.currentTarget.form?.requestSubmit();
+                  }
+                }}
                 placeholder="Message your agent..."
                 className="flex-1 h-12 px-6 rounded-full border-2 border-muted hover:border-primary/30 focus-visible:ring-primary transition-all pr-12"
                 disabled={isLoading}
@@ -170,7 +241,7 @@ export default function Chat() {
             <Button 
               type="submit" 
               size="icon" 
-              disabled={isLoading || !input?.trim()}
+              disabled={isLoading || !input.trim()}
               className="h-12 w-12 rounded-full shadow-lg hover:shadow-primary/20 transition-all shrink-0"
             >
               <Send className="h-5 w-5" />

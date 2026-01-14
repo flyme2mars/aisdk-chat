@@ -41,9 +41,9 @@ describe('AI Environment Validation', () => {
 
 describe('ProviderRegistry', () => {
   it('should return a google model for google provider', () => {
-    const model = getModel({ provider: 'google', modelId: 'gemini-2.5-flash-lite' });
+    const model = getModel({ provider: 'google', modelId: 'gemini-flash-lite-latest' });
     expect(model).toBeDefined();
-    expect(model.modelId).toBe('gemini-2.5-flash-lite');
+    expect(model.modelId).toBe('gemini-flash-lite-latest');
   });
 
   it('should return an openrouter model for openrouter provider', () => {
